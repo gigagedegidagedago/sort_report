@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>氣泡排序法演示</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        #chart { display: flex; align-items: flex-end; height: 200px; gap: 5px; margin-bottom: 20px; }
+        .bar { width: 30px; background-color: #3498db; text-align: center; color: white; font-size: 12px; transition: 0.3s; }
+        .comparing { background-color: #e74c3c !important; } /* 正在比較的顏色 */
+        .sorted { background-color: #2ecc71 !important; }    /* 已排序完成的顏色 */
+        button { padding: 10px 20px; cursor: pointer; background: #2c3e50; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>氣泡排序法 (Bubble Sort) 演示</h2>
+    
+    <div id="chart"></div>
+    
+    <div>
+        <button onclick="startSort()">開始排序</button>
+        <button onclick="resetArray()">重置陣列</button>
+    </div>
+
+    <script>
+        let data = [];
+        const chart = document.getElementById('chart');
+
+        // 初始化隨機陣列
+        function resetArray() {
+            data = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100) + 10);
+            render();
+        }
+
+        // 將數據渲染到畫面上
+        function render() {
+            chart.innerHTML = '';
+            data.forEach(value => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${value * 2}px`;
+                bar.innerText = value;
+                chart.appendChild(bar);
+            });
+        }
+
+        // 延遲函數（用於觀察動畫）
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // 核心排序演算法
+        async function startSort() {
+            const bars = document.getElementsByClassName('bar');
+            let n = data.length;
+
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    // 標示正在比較的兩個元素
+                    bars[j].classList.add('comparing');
+                    bars[j+1].classList.add('comparing');
+
+                    await sleep(300);
+
+                    if (data[j] > data[j + 1]) {
+                        // 交換數據
+                        [data[j], data[j + 1]] = [data[j + 1], data[j]];
+                        render();
+                        // 重新獲取並標色
+                        document.getElementsByClassName('bar')[j].classList.add('comparing');
+                        document.getElementsByClassName('bar')[j+1].classList.add('comparing');
+                    }
+
+                    await sleep(100);
+                    document.getElementsByClassName('bar')[j].classList.remove('comparing');
+                    document.getElementsByClassName('bar')[j+1].classList.remove('comparing');
+                }
+                // 將末端已確定的位置標為綠色
+                document.getElementsByClassName('bar')[n - i - 1].classList.add('sorted');
+            }
+            document.getElementsByClassName('bar')[0].classList.add('sorted');
+        }
+
+        resetArray();
+    </script>
+</body>
+</html>
